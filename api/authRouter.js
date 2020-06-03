@@ -30,6 +30,20 @@ router.post(
   })
 );
 
+router.get(
+  "/logout",
+  catchAsync(async (req, res, next) => {
+    if (req.session) {
+      res.clearCookie("node-auth1-session");
+      req.session.destroy(err =>
+        err
+          ? next(new AppError("An error occurred while trying to log out", 500))
+          : res.status(200).json({ message: "Logged out" })
+      );
+    } else res.status(400).json({ message: "User is not logged in." });
+  })
+);
+
 /*----------------------------------------------------------------------------*/
 /* Middleware
 /*----------------------------------------------------------------------------*/
@@ -37,31 +51,29 @@ function validateUserObject(req, res, next) {
   const { username, password } = req.body;
   username && password
     ? next()
-    : next(
-        new AppError(
-          "User object requires both 'username' and 'password' fields",
-          403
-        )
-      );
+    : res.status(400).json({
+        message: "User object requires both 'username' and 'password' fields",
+      });
 }
 
 function validateUsername(desire) {
   const userShouldExist = desire === "exists";
+
   return catchAsync(async (req, res, next) => {
     const { username } = req.body;
     const existingWithUsername = await db.getUser({ username });
     if (!userShouldExist && existingWithUsername) {
-      return next(
-        new AppError(`A user with username ${username} already exists.`, 403)
-      );
-    } else if (userShouldExist && !existingWithUsername) {
-      return next(
-        new AppError(`No user with username ${username} exists`, 404)
-      );
-    } else {
-      req.user = existingWithUsername;
-      return next();
+      return res
+        .status(400)
+        .json({ message: `A user with username ${username} already exists.` });
     }
+    if (userShouldExist && !existingWithUsername) {
+      return res
+        .status(404)
+        .json({ message: `No user with username ${username} exists` });
+    }
+    req.user = existingWithUsername;
+    return next();
   });
 }
 

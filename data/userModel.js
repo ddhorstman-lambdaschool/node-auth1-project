@@ -7,13 +7,13 @@ function addUser(user) {
 }
 
 function getUsers() {
-  return knex("users");
+  return knex("users").then(users =>
+    users.map(({ password, ...user }) => user)
+  );
 }
 
 function getUser(user) {
-  return knex("users")
-    .where(user)
-    .first();
+  return knex("users").where(user).first();
 }
 
 module.exports = { addUser, getUsers, getUser };
