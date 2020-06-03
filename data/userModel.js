@@ -3,12 +3,7 @@ const knex = require("./dbConfig");
 function addUser(user) {
   return knex("users")
     .insert(user, ["id"])
-    .then(([id]) =>
-      knex("users")
-        .where({ id })
-        .first()
-        .then(user => ({ ...user, password: "••••••••••" }))
-    );
+    .then(([id]) => getUser(id));
 }
 
 function getUsers() {
@@ -16,7 +11,10 @@ function getUsers() {
 }
 
 function getUser(id) {
-  return knex("users").where({ id });
+  return knex("users")
+    .where({ id })
+    .first()
+    .then(user => ({ ...user, password: "••••••••••" }));
 }
 
 module.exports = { addUser, getUsers, getUser };

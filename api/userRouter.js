@@ -22,10 +22,11 @@ async function validateUser(req, res, next) {
   req.user = user;
   const list = await db.getUsers();
   const existingWithUsername = list.find(u => u.username == user.username);
-  if (existingWithUsername)
+  if (existingWithUsername) {
     return next(
       new AppError(`A user with username ${user.username} already exists.`, 403)
     );
+  }
   user.username && user.password
     ? next()
     : next(
