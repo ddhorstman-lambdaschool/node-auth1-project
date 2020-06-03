@@ -1,0 +1,27 @@
+{
+  "name": "auth1-project",
+  "version": "0.1.0",
+  "description": "## Topics",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "server": "nodemon --ignore ./data/db --exec node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ddhorstman-lambdaschool/node-auth1-project.git"
+  },
+  "author": "David Horstman",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ddhorstman-lambdaschool/node-auth1-project/issues"
+  },
+  "homepage": "https://github.com/ddhorstman-lambdaschool/node-auth1-project#readme",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "express": "^4.17.1",
+    "express-session": "^1.17.1",
+    "knex": "^0.21.1",
+    "sqlite3": "^4.2.0"
+  }
+}
