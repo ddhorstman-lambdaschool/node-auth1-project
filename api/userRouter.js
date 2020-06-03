@@ -1,6 +1,6 @@
 const router = require("express").Router();
 const db = require("../data/userModel");
-const { catchAsync, AppError } = require("./errors");
+const { catchAsync } = require("./errors");
 
 router.use(restrictAccess);
 
@@ -17,7 +17,7 @@ router.get(
 function restrictAccess(req, res, next) {
   req.session && req.session.username
     ? next()
-    : next(new AppError("You must be logged in to do that", 403));
+    : res.status(403).json({ message: "You must be logged in to do that" });
 }
 
 module.exports = router;

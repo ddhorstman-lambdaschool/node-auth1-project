@@ -25,8 +25,8 @@ server.use(express.json());
 server.use(cors());
 server.use(session(sessionConfig));
 
-server.use("/api", authRouter);
 server.use("/api/users", userRouter);
+server.use("/api", authRouter);
 
 /*----------------------------------------------------------------------------*/
 /* Error handling

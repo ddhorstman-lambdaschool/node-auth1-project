@@ -26,7 +26,7 @@ router.post(
       return res.status(401).json({ message: "Invalid password" });
     }
     req.session.username = username;
-    res.status(200).json("Logged in");
+    res.status(200).json({ message: "Logged in" });
   })
 );
 
@@ -40,7 +40,9 @@ router.get(
           ? next(new AppError("An error occurred while trying to log out", 500))
           : res.status(200).json({ message: "Logged out" })
       );
-    } else res.status(400).json({ message: "User is not logged in." });
+    } else {
+      res.status(400).json({ message: "User is not logged in." });
+    }
   })
 );
 
