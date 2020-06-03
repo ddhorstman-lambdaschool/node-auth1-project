@@ -1,9 +1,4 @@
-const express = require("express");
-const server = express();
-
-server.use(express.json());
-
-
+const server = require("./api/server");
 
 /*----------------------------------------------------------------------------*/
 /* Listen
