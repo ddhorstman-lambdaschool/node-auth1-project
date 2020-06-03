@@ -5,7 +5,7 @@ const { catchAsync, AppError } = require("./errors");
 
 router.post(
   "/register",
-  validateUsername("doesn't exist"),
+  validateUserDoesNotExist,
   validateUserObject,
   catchAsync(async (req, res) => {
     const user = req.body;
@@ -17,7 +17,7 @@ router.post(
 
 router.post(
   "/login",
-  validateUsername("exists"),
+  validateUserExists,
   validateUserObject,
   catchAsync(async (req, res) => {
     const { username, password } = req.body;
@@ -58,23 +58,27 @@ function validateUserObject(req, res, next) {
       });
 }
 
-function validateUsername(desire) {
-  const userShouldExist = desire === "exists";
+function validateUserExists(req, res, next) {
+  const { username } = req.body;
+  db.getUser({ username }).then(user => {
+    if (!user) {
+      return res.status(404).json({
+        message: `No user with username '${username}' exists`,
+      });
+    }
+    req.user = user;
+    return next();
+  });
+}
 
-  return catchAsync(async (req, res, next) => {
-    const { username } = req.body;
-    const existingWithUsername = await db.getUser({ username });
-    if (!userShouldExist && existingWithUsername) {
-      return res
-        .status(400)
-        .json({ message: `A user with username ${username} already exists.` });
+function validateUserDoesNotExist(req, res, next) {
+  const { username } = req.body;
+  db.getUser({ username }).then(user => {
+    if (user) {
+      return res.status(400).json({
+        message: `A user with username '${username}' already exists.`,
+      });
     }
-    if (userShouldExist && !existingWithUsername) {
-      return res
-        .status(404)
-        .json({ message: `No user with username ${username} exists` });
-    }
-    req.user = existingWithUsername;
     return next();
   });
 }
