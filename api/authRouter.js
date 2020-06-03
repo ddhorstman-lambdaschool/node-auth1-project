@@ -1,7 +1,7 @@
 const router = require("express").Router();
 const db = require("../data/userModel");
 const bcrypt = require("bcryptjs");
-const { catchAsync, AppError } = require("./errors");
+const { catchAsync } = require("./errors");
 
 router.post(
   "/register",
@@ -33,15 +33,13 @@ router.post(
 router.get(
   "/logout",
   catchAsync(async (req, res, next) => {
-    if (req.session) {
+    if (req.session.username) {
       res.clearCookie("node-auth1-session");
       req.session.destroy(err =>
-        err
-          ? next(new AppError("An error occurred while trying to log out", 500))
-          : res.status(200).json({ message: "Logged out" })
+        err ? next(err) : res.status(200).json({ message: "Logged out" })
       );
     } else {
-      res.status(400).json({ message: "User is not logged in." });
+      res.status(400).json({ message: "You are not logged in." });
     }
   })
 );
