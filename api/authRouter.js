@@ -25,7 +25,7 @@ router.post(
     if (!bcrypt.compareSync(password, passwordHash)) {
       return res.status(401).json({ message: "Invalid password" });
     }
-    req.session.username = username;
+    req.session.user = user;
     res.status(200).json({ message: "Logged in" });
   })
 );
@@ -33,7 +33,7 @@ router.post(
 router.get(
   "/logout",
   catchAsync(async (req, res, next) => {
-    if (req.session.username) {
+    if (req.session.user) {
       res.clearCookie("node-auth1-session");
       req.session.destroy(err =>
         err ? next(err) : res.status(200).json({ message: "Logged out" })
