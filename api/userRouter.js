@@ -15,7 +15,7 @@ router.get(
 /* Restricted access middleware
 /*----------------------------------------------------------------------------*/
 function restrictAccess(req, res, next) {
-  req.session && req.session.username
+  req.session && req.session.user
     ? next()
     : res.status(403).json({ message: "You must be logged in to do that" });
 }

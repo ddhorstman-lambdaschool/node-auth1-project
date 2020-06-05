@@ -25,7 +25,7 @@ router.post(
     if (!bcrypt.compareSync(password, passwordHash)) {
       return res.status(401).json({ message: "Invalid password" });
     }
-    req.session.user = user;
+    req.session.user = req.user;
     res.status(200).json({ message: "Logged in" });
   })
 );
