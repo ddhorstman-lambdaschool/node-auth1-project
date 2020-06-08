@@ -31,42 +31,6 @@ router.post(
 );
 
 router.get(
-  "/login",
-  function validateUserObject(req, res, next) {
-    const { username, password } = req.query;
-    username && password
-      ? next()
-      : res.status(400).json({
-          message: "User object requires both 'username' and 'password' fields",
-        });
-  },
-  function validateUserExists(req, res, next) {
-    const { username } = req.query;
-    if (!username) {
-      return res.status(400).json({ message: "Malformed user object" });
-    }
-    db.getUser({ username }).then(user => {
-      if (!user) {
-        return res.status(404).json({
-          message: `No user with username '${username}' exists`,
-        });
-      }
-      req.user = user;
-      return next();
-    });
-  },
-  catchAsync(async (req, res) => {
-    const { username, password } = req.query;
-    const { password: passwordHash } = req.user;
-    if (!bcrypt.compareSync(password, passwordHash)) {
-      return res.status(401).json({ message: "Invalid password" });
-    }
-    req.session.user = req.user;
-    res.status(200).json({ message: "Logged in" });
-  })
-);
-
-router.get(
   "/logout",
   catchAsync(async (req, res, next) => {
     if (req.session.user) {
@@ -119,6 +83,74 @@ function validateUserDoesNotExist(req, res, next) {
     return next();
   });
 }
+
+/*----------------------------------------------------------------------------*/
+/* GET (CORS fails on POST for some reason)
+/*----------------------------------------------------------------------------*/
+router.get(
+  "/login",
+  function validateUserObject(req, res, next) {
+    const { username, password } = req.query;
+    username && password
+      ? next()
+      : res.status(400).json({
+          message: "User object requires both 'username' and 'password' fields",
+        });
+  },
+  function validateUserExists(req, res, next) {
+    const { username } = req.query;
+    if (!username) {
+      return res.status(400).json({ message: "Malformed user object" });
+    }
+    db.getUser({ username }).then(user => {
+      if (!user) {
+        return res.status(404).json({
+          message: `No user with username '${username}' exists`,
+        });
+      }
+      req.user = user;
+      return next();
+    });
+  },
+  catchAsync(async (req, res) => {
+    const { username, password } = req.query;
+    const { password: passwordHash } = req.user;
+    if (!bcrypt.compareSync(password, passwordHash)) {
+      return res.status(401).json({ message: "Invalid password" });
+    }
+    req.session.user = req.user;
+    res.status(200).json({ message: "Logged in" });
+  })
+);
+
+router.get(
+  "/register",
+  function validateUserDoesNotExist(req, res, next) {
+    const { username } = req.query;
+    db.getUser({ username }).then(user => {
+      if (user) {
+        return res.status(400).json({
+          message: `A user with username '${username}' already exists.`,
+        });
+      }
+      return next();
+    });
+  },
+  function validateUserObject(req, res, next) {
+    const { username, password } = req.query;
+    username && password
+      ? next()
+      : res.status(400).json({
+          message: "User object requires both 'username' and 'password' fields",
+        });
+  },
+  catchAsync(async (req, res) => {
+    const user = req.query;
+    user.password = bcrypt.hashSync(user.password, 10);
+    const saved = await db.addUser(user);
+    res.status(201).json({ ...saved, password: "••••••••••" });
+  })
+);
 
 /* Export --------------------------------------------------------------------*/
 module.exports = router;

@@ -37,12 +37,12 @@ export default class Login extends React.Component {
           value={this.state.password}
           onChange={this.handleChange}
         />
-        <button name='login' type='submit' /*onClick={this.setSender}*/>
+        <button name='login' type='submit' onClick={this.setSender}>
           Log In
         </button>
-        {/*<button name='register' type='submit' onClick={this.setSender}>
+        <button name='register' type='submit' onClick={this.setSender}>
           Register
-    </button>*/}
+        </button>
       </form>
     );
   }
