@@ -31,6 +31,42 @@ router.post(
 );
 
 router.get(
+  "/login",
+  function validateUserObject(req, res, next) {
+    const { username, password } = req.query;
+    username && password
+      ? next()
+      : res.status(400).json({
+          message: "User object requires both 'username' and 'password' fields",
+        });
+  },
+  function validateUserExists(req, res, next) {
+    const { username } = req.query;
+    if (!username) {
+      return res.status(400).json({ message: "Malformed user object" });
+    }
+    db.getUser({ username }).then(user => {
+      if (!user) {
+        return res.status(404).json({
+          message: `No user with username '${username}' exists`,
+        });
+      }
+      req.user = user;
+      return next();
+    });
+  },
+  catchAsync(async (req, res) => {
+    const { username, password } = req.query;
+    const { password: passwordHash } = req.user;
+    if (!bcrypt.compareSync(password, passwordHash)) {
+      return res.status(401).json({ message: "Invalid password" });
+    }
+    req.session.user = req.user;
+    res.status(200).json({ message: "Logged in" });
+  })
+);
+
+router.get(
   "/logout",
   catchAsync(async (req, res, next) => {
     if (req.session.user) {
@@ -58,6 +94,9 @@ function validateUserObject(req, res, next) {
 
 function validateUserExists(req, res, next) {
   const { username } = req.body;
+  if (!username) {
+    return res.status(400).json({ message: "Malformed user object" });
+  }
   db.getUser({ username }).then(user => {
     if (!user) {
       return res.status(404).json({

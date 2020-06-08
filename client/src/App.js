@@ -1,13 +1,15 @@
-import React from 'react';
-import './App.css';
-import UserList from "./components/UserList"
-import Nav from "./components/Nav"
+import React from "react";
+import "./App.css";
+import UserList from "./components/UserList";
+import LoginLogout from "./components/LoginLogout";
 
 function App() {
-  return <>
-<Nav />
-    <UserList />
-  </>;
+  return (
+    <>
+      <LoginLogout />
+      <UserList />
+    </>
+  );
 }
 
 export default App;

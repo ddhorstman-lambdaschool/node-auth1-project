@@ -16,22 +16,30 @@ const sessionConfig = {
     maxAge: sessionDuration,
     secure: process.env.NODE_ENV === "production",
     httpOnly: true,
+    sameSite: "none",
   },
   resave: false,
-  saveUninitialized: false,
+  saveUninitialized: process.env.NODE_ENV !== "production",
 
   store: new knexSessionStore({
     knex: require("../data/dbConfig"),
     tableName: "session",
     sidfieldname: "sid",
     createtable: true,
-    clearInterval: sessionDuration
-  })
+    clearInterval: sessionDuration,
+  }),
 };
 
 server.use(helmet());
-server.use(express.json());
 server.use(cors());
+server.use((req, res, next) => {
+  res.set({
+    "Access-Control-Allow-Origin": "http://localhost:3000",
+    "Access-Control-Allow-Credentials": "true",
+  });
+  next();
+});
+server.use(express.json());
 server.use(session(sessionConfig));
 
 const authRouter = require("./authRouter");
