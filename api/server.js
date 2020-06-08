@@ -19,7 +19,7 @@ const sessionConfig = {
     sameSite: "none",
   },
   resave: false,
-  saveUninitialized: process.env.NODE_ENV !== "production",
+  saveUninitialized: false,
 
   store: new knexSessionStore({
     knex: require("../data/dbConfig"),
