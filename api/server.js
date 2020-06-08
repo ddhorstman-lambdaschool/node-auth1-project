@@ -31,14 +31,7 @@ const sessionConfig = {
 };
 
 server.use(helmet());
-server.use(cors());
-server.use((req, res, next) => {
-  res.set({
-    "Access-Control-Allow-Origin": "http://localhost:3000",
-    "Access-Control-Allow-Credentials": "true",
-  });
-  next();
-});
+server.use(cors({ origin: "http://localhost:3000", credentials: true }));
 server.use(express.json());
 server.use(session(sessionConfig));
 
