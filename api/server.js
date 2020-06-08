@@ -15,7 +15,7 @@ const sessionConfig = {
   cookie: {
     maxAge: sessionDuration,
     secure: process.env.NODE_ENV === "production",
-    httpOnly: false,
+    httpOnly: true,
     sameSite: "none",
   },
   resave: false,
