@@ -6,7 +6,7 @@ import LoginLogout from "./components/LoginLogout";
 function App() {
   return (
     <>
-      <LoginLogout />
+      <LoginLogout /><br/><br/>
       <UserList />
     </>
   );
